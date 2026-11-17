@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14110c">
+<title>Crônicas da Manutenção</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110c;--card:#241c12;--gold:#c9a24b;--gold2:#ecd592;--ink:#efe4c8;--mute:#a8987a;--green:#4d7045;--red:#b5492f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:'IM Fell English',Georgia,serif;background:radial-gradient(ellipse at top,#33271a,#14110c 65%) fixed}
+.wrap{max-width:560px;margin:0 auto;padding:18px 16px 60px}
+h1,h2,h3,.os,.tag,.btn,.stat b{font-family:Cinzel,Georgia,serif}
+h1{margin:6px 0 2px;text-align:center;color:var(--gold2);font-size:26px;letter-spacing:2px;text-shadow:0 0 18px #c9a24b66}
+.sub{text-align:center;color:var(--mute);font-style:italic;margin:0 0 16px}
+.orn{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.stat{border:1px solid #c9a24b55;border-radius:10px;padding:10px 4px;text-align:center;background:#1b150e}
+.stat b{display:block;font-size:24px;color:var(--gold2)}
+.stat span{font-size:12px;color:var(--mute)}
+.stat.red b{color:#e0745a}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{background:linear-gradient(#3a2d1a,#261d10);color:var(--gold2);border:1px solid var(--gold);border-radius:10px;padding:11px 16px;font-size:13px;letter-spacing:1px;cursor:pointer}
+.btn.ghost{background:none;border-color:#c9a24b66;color:var(--mute)}
+.msg{text-align:center;color:var(--gold2);margin:12px 0;font-style:italic}
+h2{font-size:15px;letter-spacing:2px;color:var(--gold);margin:26px 0 10px;display:flex;align-items:center;gap:10px;text-transform:uppercase}
+h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+h2.red{color:#e0745a}h2.red::after{background:linear-gradient(90deg,#e0745a,transparent)}
+.card{position:relative;background:linear-gradient(160deg,#2d2315,var(--card));border:1px solid var(--gold);border-radius:14px;padding:14px 14px 12px;margin-bottom:12px;box-shadow:inset 0 0 0 3px #14110c,inset 0 0 0 4px #c9a24b44,0 6px 16px #0008;cursor:pointer}
+.card.late{border-color:var(--red);box-shadow:inset 0 0 0 3px #14110c,inset 0 0 0 4px #b5492f66,0 0 16px #b5492f44}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.os{font-size:12px;color:var(--gold);letter-spacing:1px}
+.tag{font-size:10px;letter-spacing:1px;border:1px solid #c9a24b88;border-radius:20px;padding:3px 9px;color:var(--gold2);text-transform:uppercase}
+.card h3{margin:8px 0 4px;font-size:17px;color:var(--ink);line-height:1.25}
+.work{color:var(--mute);font-style:italic;font-size:14px}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-top:10px;border-top:1px dashed #c9a24b44;padding-top:8px}
+.warn{margin-top:8px;color:#f0a48e;font-size:14px}
+.desc{margin:8px 0 0;font-size:14px;color:#cbbd9c;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.desc.open{display:block}
+.empty{text-align:center;border:1px dashed var(--gold);border-radius:14px;padding:30px 18px;margin-top:20px;color:var(--mute)}
+.ov{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at top,#3a2c1a,#0e0b07 70%);overflow:auto;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 22px)}
+.cnt{color:var(--mute);font-size:13px;margin:0 0 26px;font-style:italic}
+.hs{position:relative;width:min(290px,78vw);aspect-ratio:5/7;border-radius:22px;background:linear-gradient(160deg,#4a3820,#2a1f12);border:3px solid var(--gold);box-shadow:inset 0 0 0 4px #14110c,inset 0 0 0 6px #c9a24b66,0 14px 34px #000a,0 0 30px #c9a24b33;padding:34px 16px 18px;display:flex;flex-direction:column;animation:deal .45s ease-out}
+@keyframes deal{from{transform:translateY(70px) rotate(-6deg) scale(.9);opacity:0}to{transform:none;opacity:1}}
+.art{height:34%;border-radius:50% 50% 12px 12px/40% 40% 12px 12px;background:radial-gradient(circle,#5d7a52,#1f2c1c);border:2px solid var(--gold);display:grid;place-items:center;font-size:54px;color:var(--gold2);text-shadow:0 0 20px #ecd592aa}
+.banner{font-family:Cinzel,serif;margin:10px -22px 0;padding:6px 16px;text-align:center;background:linear-gradient(90deg,#14110c,#5a4322,#14110c);border-block:1px solid var(--gold);color:var(--gold2);font-size:14px;line-height:1.2;max-height:3.5em;overflow:hidden}
+.type{text-align:center;font-size:12px;color:var(--mute);margin:6px 0;font-style:italic}
+.box{flex:1;overflow:hidden;background:#e9dcb8;color:#2b2111;border-radius:8px;padding:9px;font-size:13px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical}
+.gem{position:absolute;top:-14px;left:-12px;width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ecd592,#8a6a24);border:2px solid #14110c;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Cinzel,serif;font-weight:700;color:#14110c;font-size:17px;line-height:1;box-shadow:0 3px 8px #000a}
+.gem small{font-size:8px;font-weight:500}
+.gem.red{background:radial-gradient(circle at 35% 30%,#f0a48e,#8a2f1c);color:#fff}
+.gem.g2{top:auto;bottom:-14px}.gem.g3{top:auto;left:auto;right:-12px;bottom:-14px}
+.ask{text-align:center;margin:30px 0 12px;font-family:Cinzel,serif;color:var(--gold2);font-size:18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(340px,100%)}
+.opts .btn{padding:12px 8px;font-size:12px;line-height:1.3}
+.opts .btn small{display:block;color:var(--mute);font-family:'IM Fell English',serif;letter-spacing:0;font-size:13px}
+.later{margin-top:16px;background:none;border:0;color:var(--mute);font-style:italic;font-size:14px;cursor:pointer}
+.plan{border:1px solid #c9a24b55;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#1b150e;font-size:14px}
+.plan b{display:block;font-family:Cinzel,serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:4px}
+.plan i{color:var(--mute);font-size:12px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const {useState,useMemo}=React;const html=htm.bind(React.createElement);
+const KEY='cronicas-os-v1';
+const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const COLS={num:['numero da os','numero os','no da os','n da os','os'],tipo:['tipo de os'],titulo:['titulo'],trabalho:['trabalho'],inicio:['data de inicio programada','inicio programada'],fim:['data de conclusao'],desc:['descricao']};
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d?d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()):'';
+const fromIso=s=>s?new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10)):null;
+const fmt=s=>s?s.slice(8,10)+'/'+s.slice(5,7):'—';
+const monday=d=>{const x=new Date(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return x};
+function toDate(v){
+  if(v===''||v==null)return null;
+  if(typeof v==='number'){const d=new Date(Math.round((v-25569)*864e5));return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())}
+  const s=String(v),a=s.match(/(\d{4})-(\d{2})-(\d{2})/);if(a)return new Date(+a[1],a[2]-1,+a[3]);
+  const m=s.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+  if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,m[2]-1,+m[1])}
+  return null;
+}
+function parseRows(rows){
+  if(!rows.length)return[];
+  const keys=Object.keys(rows[0]),pick={};
+  for(const f in COLS)pick[f]=keys.find(k=>COLS[f].includes(norm(k)))||keys.find(k=>COLS[f].some(a=>a.length>6&&norm(k).includes(a)));
+  return rows.map(r=>{
+    const g=f=>pick[f]?r[pick[f]]:'',t=f=>String(g(f)).trim();
+    return{num:t('num'),tipo:t('tipo'),titulo:t('titulo'),trabalho:t('trabalho'),desc:t('desc'),inicio:iso(toDate(g('inicio'))),fim:iso(toDate(g('fim')))};
+  }).filter(o=>o.num||o.titulo);
+}
+function sample(){
+  const t=new Date(),d=n=>{const x=new Date(t.getFullYear(),t.getMonth(),t.getDate()+n);return iso(x)};
+  const L=[['Lubrificar rolamentos da esteira 3','Preventiva','Mecânica',-9,-6,'Aplicar graxa conforme plano, registrar quantidade e conferir vedações.'],
+  ['Trocar filtro de ar do compressor','Preventiva','Mecânica',-4,-2,'Substituir elemento filtrante e limpar carcaça.'],
+  ['Inspeção termográfica do painel PN-12','Preditiva','Elétrica',-1,0,'Registrar pontos quentes acima de 15 °C do ambiente.'],
+  ['Reapertar bornes do CCM-02','Preventiva','Elétrica',0,2,'Torque conforme procedimento, com o equipamento desenergizado.'],
+  ['Alinhar acoplamento da bomba B-07','Corretiva','Mecânica',1,3,'Vibração acima do limite na última medição.'],
+  ['Calibrar sensor de nível do tanque 2','Preventiva','Instrumentação',3,5,'Verificar zero e span com padrão rastreável.'],
+  ['Limpeza do trocador de calor','Preventiva','Mecânica',7,10,'Retirar incrustações e testar estanqueidade.'],
+  ['Teste do disjuntor geral','Preditiva','Elétrica',8,9,'Teste funcional e inspeção visual.'],
+  ['Revisar válvula de alívio V-21','Corretiva','Mecânica',14,17,'Reajustar pressão de abertura.']];
+  return L.map((x,i)=>({num:String(48210+i),titulo:x[0],tipo:x[1],trabalho:x[2],inicio:d(x[3]),fim:d(x[4]),desc:x[5]}));
+}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{orders:[],done:{}}}catch(e){return{orders:[],done:{}}}}
+function weekLabel(k,today){
+  if(k==='zz')return'Sem data definida';
+  const s=fromIso(k),e=new Date(s);e.setDate(e.getDate()+4);
+  const diff=Math.round((s-monday(today))/6048e5);
+  return(diff<=0?'Esta semana':diff===1?'Próxima semana':'Semana')+' · '+fmt(iso(s))+' a '+fmt(iso(e));
+}
+function Card({o}){
+  const[open,setOpen]=useState(false);
+  return html`<article class=${'card'+(o.late?' late':'')} onClick=${()=>setOpen(!open)}>
+    <div class="top"><span class="os">OS ${o.num}</span><span class="tag">${o.tipo||'Tarefa'}</span></div>
+    <h3>${o.titulo||'Sem título'}</h3>
+    ${o.trabalho&&html`<div class="work">${o.trabalho}</div>`}
+    <div class="meta"><span>Início ${fmt(o.inicio)}</span><span>Prazo ${fmt(o.fim)}</span></div>
+    ${o.late>0&&html`<div class="warn">⚔ ${o.late} ${o.late===1?'dia':'dias'} de atraso</div>`}
+    ${o.desc&&html`<p class=${open?'desc open':'desc'}>${o.desc}</p>`}
+  </article>`;
+}
+const WIN={dia:{t:'Durante o dia',h:'07:00–16:00'},cafe:{t:'Intervalo de café',h:'08:45–09:15'},almoco:{t:'Intervalo de almoço',h:'11:00–12:30'},nao:{t:'Não consigo hoje',h:''}};
+const RUNES='ᚠᚢᚦᚨᚱᚲᚷᚹ';
+function Deck({deck,answer,close}){
+  const o=deck[0];
+  return html`<div class="ov">
+    <h1 style=${{fontSize:'20px'}}>Desafios de hoje</h1>
+    <p class="cnt">${deck.length} ${deck.length===1?'carta restante':'cartas restantes'}</p>
+    <div class="hs" key=${o.num+o.titulo}>
+      <div class=${'gem'+(o.late>0?' red':'')}>${o.late>0?o.late:'☀'}<small>${o.late>0?(o.late===1?'dia':'dias'):'hoje'}</small></div>
+      <div class="art">${RUNES[(o.tipo||'x').charCodeAt(0)%RUNES.length]}</div>
+      <div class="banner">${o.titulo||'Sem título'}</div>
+      <div class="type">${o.tipo||'Tarefa'}${o.trabalho?' · '+o.trabalho:''} · OS ${o.num}</div>
+      <div class="box">${o.desc||'Sem descrição.'}</div>
+      <div class="gem g2">${fmt(o.inicio)}<small>início</small></div>
+      <div class="gem g3">${fmt(o.fim)}<small>prazo</small></div>
+    </div>
+    <div class="ask">Consegue realizar hoje?</div>
+    <div class="opts">
+      ${['dia','cafe','almoco','nao'].map(w=>html`<button key=${w} class=${'btn'+(w==='nao'?' ghost':'')} onClick=${()=>answer(o.num,w)}>${WIN[w].t}<small>${WIN[w].h||' '}</small></button>`)}
+    </div>
+    <button class="later" onClick=${close}>Decidir depois</button>
+  </div>`;
+}
+function App(){
+  const[deckOpen,setDeckOpen]=useState(true);
+  const[st,setSt]=useState(load);const[msg,setMsg]=useState('');
+  const today=useMemo(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())},[]);
+  const save=s=>{setSt(s);try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}};
+  const onFile=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{
+      const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
+      const orders=parseRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{raw:true,defval:''}));
+      if(!orders.length){setMsg('Nenhuma ordem encontrada. Confira os nomes das colunas.')}
+      else{save({orders,done:st.done});setMsg(orders.length+' desafios revelados')}
+    }catch(err){setMsg('Não foi possível ler a planilha.')}
+    e.target.value='';
+  };
+  const{lateList,groups,total,list}=useMemo(()=>{
+    const list=st.orders.filter(o=>!st.done[o.num]).map(o=>{
+      const fim=fromIso(o.fim),ini=fromIso(o.inicio),due=fim||ini;
+      const late=due&&due<today?Math.round((today-due)/864e5):0;
+      return{...o,late,g:(ini&&ini>=today)?ini:(fim||ini)};
+    });
+    const lateList=list.filter(o=>o.late>0).sort((a,b)=>b.late-a.late),map={};
+    list.filter(o=>!o.late).forEach(o=>{const k=o.g?iso(monday(o.g)):'zz';(map[k]=map[k]||[]).push(o)});
+    const groups=Object.keys(map).sort().map(k=>({k,items:map[k].sort((a,b)=>(a.g||0)-(b.g||0))}));
+    return{lateList,groups,total:list.length,list};
+  },[st,today]);
+  const thisWeek=groups.find(g=>g.k===iso(monday(today)));
+  const todayIso=iso(today),ans=(st.plan&&st.plan.d===todayIso)?st.plan.a:{};
+  const deck=list.filter(o=>(o.late>0||(o.inicio&&o.inicio<=todayIso))&&!ans[o.num]).sort((a,b)=>b.late-a.late);
+  const planned=list.filter(o=>['dia','cafe','almoco'].includes(ans[o.num]));
+  const answer=(num,w)=>save({...st,plan:{d:todayIso,a:{...ans,[num]:w}}});
+  return html`<div class="wrap">
+    ${deckOpen&&deck.length>0&&html`<${Deck} deck=${deck} answer=${answer} close=${()=>setDeckOpen(false)}/>`}
+    <h1>Crônicas da Manutenção</h1>
+    <p class="sub">Cada ordem, uma jornada a cumprir</p>
+    <div class="orn"></div>
+    <div class="stats">
+      <div class="stat red"><b>${lateList.length}</b><span>Atrasadas</span></div>
+      <div class="stat"><b>${thisWeek?thisWeek.items.length:0}</b><span>Esta semana</span></div>
+      <div class="stat"><b>${total}</b><span>Em aberto</span></div>
+    </div>
+    <div class="actions">
+      <label class="btn">Importar planilha<input type="file" accept=".xlsx,.xls,.csv" hidden onChange=${onFile}/></label>
+      ${total>0&&html`<button class="btn ghost" onClick=${()=>{save({orders:[],done:{}});setMsg('')}}>Limpar</button>`}
+    </div>
+    ${msg&&html`<div class="msg">${msg}</div>`}
+    ${deck.length>0&&!deckOpen&&html`<div class="actions" style=${{marginTop:'12px'}}><button class="btn" onClick=${()=>setDeckOpen(true)}>Desafios de hoje (${deck.length})</button></div>`}
+    ${planned.length>0&&html`<h2>Plano de hoje</h2>${['dia','cafe','almoco'].map(w=>{const it=planned.filter(o=>ans[o.num]===w);return it.length?html`<div class="plan" key=${w}><b>${WIN[w].t} · ${WIN[w].h}</b>${it.map(o=>html`<div key=${o.num+o.titulo}>${o.titulo} <i>OS ${o.num}</i></div>`)}</div>`:null})}`}
+    ${total===0&&html`<div class="empty">Nenhum desafio no horizonte.<br/>Importe a planilha de ordens para começar a jornada.<br/><br/>
+      <button class="btn ghost" onClick=${()=>save({orders:sample(),done:st.done})}>Ver exemplo</button></div>`}
+    ${lateList.length>0&&html`<h2 class="red">Atrasadas</h2>${lateList.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o}/>`)}`}
+    ${groups.map(g=>html`<div key=${g.k}><h2>${weekLabel(g.k,today)}</h2>${g.items.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o}/>`)}</div>`)}
+  </div>`;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+</script>
+</body>
+</html>
