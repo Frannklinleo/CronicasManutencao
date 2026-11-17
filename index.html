@@ -62,6 +62,17 @@ h2.red{color:#e0745a}h2.red::after{background:linear-gradient(90deg,#e0745a,tran
 .plan{border:1px solid #c9a24b55;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#1b150e;font-size:14px}
 .plan b{display:block;font-family:Cinzel,serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:4px}
 .plan i{color:var(--mute);font-size:12px}
+.wrap{padding-bottom:100px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:#100c07;border-top:1px solid var(--gold);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{flex:1;padding:15px 0;background:none;border:0;color:var(--mute);font-family:Cinzel,serif;letter-spacing:1px;font-size:13px;cursor:pointer}
+.tabs .on{color:var(--gold2);box-shadow:inset 0 2px 0 var(--gold)}
+.btn.done{padding:8px 14px;font-size:11px;margin-top:10px;border-color:#6f9a5f;color:#c2e0b0}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}
+.prow .btn{margin:0;flex:none}
+.rew{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:70;display:flex;gap:14px;align-items:center;padding:14px 24px;border-radius:16px;background:linear-gradient(#4a3820,#2a1f12);border:2px solid var(--gold);box-shadow:0 0 34px #ecd59299,0 10px 30px #000a;color:var(--gold2);font-family:Cinzel,serif;white-space:nowrap;pointer-events:none;animation:rise 2.4s ease-in-out forwards}
+.rew b{font-size:15px;display:block}
+.rn{font-size:32px;text-shadow:0 0 14px #ecd592}
+@keyframes rise{0%{transform:translate(-50%,220%);opacity:0}18%{transform:translate(-50%,0);opacity:1}75%{transform:translate(-50%,0);opacity:1}100%{transform:translate(-50%,220%);opacity:0}}
 </style>
 </head>
 <body>
@@ -117,7 +128,7 @@ function weekLabel(k,today){
   const diff=Math.round((s-monday(today))/6048e5);
   return(diff<=0?'Esta semana':diff===1?'Próxima semana':'Semana')+' · '+fmt(iso(s))+' a '+fmt(iso(e));
 }
-function Card({o}){
+function Card({o,onDone}){
   const[open,setOpen]=useState(false);
   return html`<article class=${'card'+(o.late?' late':'')} onClick=${()=>setOpen(!open)}>
     <div class="top"><span class="os">OS ${o.num}</span><span class="tag">${o.tipo||'Tarefa'}</span></div>
@@ -126,6 +137,7 @@ function Card({o}){
     <div class="meta"><span>Início ${fmt(o.inicio)}</span><span>Prazo ${fmt(o.fim)}</span></div>
     ${o.late>0&&html`<div class="warn">⚔ ${o.late} ${o.late===1?'dia':'dias'} de atraso</div>`}
     ${o.desc&&html`<p class=${open?'desc open':'desc'}>${o.desc}</p>`}
+    <button class="btn done" onClick=${e=>{e.stopPropagation();onDone(o)}}>Concluir</button>
   </article>`;
 }
 const WIN={dia:{t:'Durante o dia',h:'07:00–16:00'},cafe:{t:'Intervalo de café',h:'08:45–09:15'},almoco:{t:'Intervalo de almoço',h:'11:00–12:30'},nao:{t:'Não consigo hoje',h:''}};
@@ -152,7 +164,7 @@ function Deck({deck,answer,close}){
   </div>`;
 }
 function App(){
-  const[deckOpen,setDeckOpen]=useState(true);
+  const[deckOpen,setDeckOpen]=useState(true);const[tab,setTab]=useState('home');const[reward,setReward]=useState(null);
   const[st,setSt]=useState(load);const[msg,setMsg]=useState('');
   const today=useMemo(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())},[]);
   const save=s=>{setSt(s);try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}};
@@ -182,8 +194,22 @@ function App(){
   const deck=list.filter(o=>(o.late>0||(o.inicio&&o.inicio<=todayIso))&&!ans[o.num]).sort((a,b)=>b.late-a.late);
   const planned=list.filter(o=>['dia','cafe','almoco'].includes(ans[o.num]));
   const answer=(num,w)=>save({...st,plan:{d:todayIso,a:{...ans,[num]:w}}});
+  const finish=o=>{const xp=10+(o.late>0?5:0);save({...st,done:{...st.done,[o.num]:{num:o.num,titulo:o.titulo,tipo:o.tipo,trabalho:o.trabalho,late:o.late,xp,d:todayIso,at:new Date().toISOString()}}});setReward({xp,k:Date.now()});setTimeout(()=>setReward(null),2600)};
+  const undo=n=>{const d={...st.done};delete d[n];save({...st,done:d})};
+  const doneList=Object.values(st.done).sort((a,b)=>b.at.localeCompare(a.at));
+  const xpTotal=doneList.reduce((s,x)=>s+(x.xp||0),0);
+  const nav=html`<nav class="tabs"><button class=${tab==='home'?'on':''} onClick=${()=>setTab('home')}>Jornada</button><button class=${tab==='done'?'on':''} onClick=${()=>setTab('done')}>Feitos · ${doneList.length}</button></nav>`;
+  const rew=reward&&html`<div class="rew" key=${reward.k}><span class="rn">ᚠ</span><div><b>Desafio cumprido!</b><div>+${reward.xp} XP</div></div></div>`;
+  if(tab==='done')return html`<div class="wrap">${nav}${rew}
+    <h1>Feitos da Jornada</h1>
+    <p class="sub">${doneList.length} ${doneList.length===1?'desafio cumprido':'desafios cumpridos'} · ${xpTotal} XP</p>
+    <div class="orn"></div>
+    ${doneList.length===0&&html`<div class="empty">Nenhum desafio cumprido ainda.<br/>Conclua uma OS na aba Jornada.</div>`}
+    ${[...new Set(doneList.map(x=>x.d||x.at.slice(0,10)))].map(d=>html`<div key=${d}><h2>${fmt(d)}</h2>${doneList.filter(x=>(x.d||x.at.slice(0,10))===d).map(x=>html`<div class="plan" key=${x.num}><b>OS ${x.num} · ${x.tipo||'Tarefa'}</b>${x.titulo}<div class="prow"><i>+${x.xp} XP</i><button class="later" style=${{margin:0}} onClick=${()=>undo(x.num)}>Desfazer</button></div></div>`)}</div>`)}
+  </div>`;
   return html`<div class="wrap">
     ${deckOpen&&deck.length>0&&html`<${Deck} deck=${deck} answer=${answer} close=${()=>setDeckOpen(false)}/>`}
+    ${nav}${rew}
     <h1>Crônicas da Manutenção</h1>
     <p class="sub">Cada ordem, uma jornada a cumprir</p>
     <div class="orn"></div>
@@ -198,11 +224,11 @@ function App(){
     </div>
     ${msg&&html`<div class="msg">${msg}</div>`}
     ${deck.length>0&&!deckOpen&&html`<div class="actions" style=${{marginTop:'12px'}}><button class="btn" onClick=${()=>setDeckOpen(true)}>Desafios de hoje (${deck.length})</button></div>`}
-    ${planned.length>0&&html`<h2>Plano de hoje</h2>${['dia','cafe','almoco'].map(w=>{const it=planned.filter(o=>ans[o.num]===w);return it.length?html`<div class="plan" key=${w}><b>${WIN[w].t} · ${WIN[w].h}</b>${it.map(o=>html`<div key=${o.num+o.titulo}>${o.titulo} <i>OS ${o.num}</i></div>`)}</div>`:null})}`}
+    ${planned.length>0&&html`<h2>Plano de hoje</h2>${['dia','cafe','almoco'].map(w=>{const it=planned.filter(o=>ans[o.num]===w);return it.length?html`<div class="plan" key=${w}><b>${WIN[w].t} · ${WIN[w].h}</b>${it.map(o=>html`<div class="prow" key=${o.num+o.titulo}><span>${o.titulo} <i>OS ${o.num}</i></span><button class="btn done" onClick=${()=>finish(o)}>Concluir</button></div>`)}</div>`:null})}`}
     ${total===0&&html`<div class="empty">Nenhum desafio no horizonte.<br/>Importe a planilha de ordens para começar a jornada.<br/><br/>
       <button class="btn ghost" onClick=${()=>save({orders:sample(),done:st.done})}>Ver exemplo</button></div>`}
-    ${lateList.length>0&&html`<h2 class="red">Atrasadas</h2>${lateList.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o}/>`)}`}
-    ${groups.map(g=>html`<div key=${g.k}><h2>${weekLabel(g.k,today)}</h2>${g.items.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o}/>`)}</div>`)}
+    ${lateList.length>0&&html`<h2 class="red">Atrasadas</h2>${lateList.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o} onDone=${finish}/>`)}`}
+    ${groups.map(g=>html`<div key=${g.k}><h2>${weekLabel(g.k,today)}</h2>${g.items.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o} onDone=${finish}/>`)}</div>`)}
   </div>`;
 }
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
