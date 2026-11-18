@@ -130,6 +130,8 @@ body{background:radial-gradient(ellipse at top,#3a2c1a,#120e09 70%) fixed,repeat
 @keyframes fadein{from{opacity:0}}
 @keyframes fl{from{opacity:.85}to{opacity:0}}
 @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:none}}
+.snd{font-size:12px}.snd.off{opacity:.4;text-decoration:line-through}
+.plan input[type=range]{width:100%;accent-color:#c9a24b;margin-top:6px}
 </style>
 </head>
 <body>
@@ -164,6 +166,18 @@ function parseRows(rows){
     const g=f=>pick[f]?r[pick[f]]:'',t=f=>String(g(f)).trim();
     return{num:t('num'),tipo:t('tipo'),titulo:t('titulo'),trabalho:t('trabalho'),desc:t('desc'),inicio:iso(toDate(g('inicio'))),fim:iso(toDate(g('fim')))};
   }).filter(o=>o.num||o.titulo);
+}
+function readBook(wb){
+  const out=[];
+  wb.SheetNames.forEach(sn=>{
+    const a=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:''});
+    const hi=a.slice(0,25).findIndex(r=>r.filter(c=>Object.values(COLS).some(al=>al.includes(norm(c)))).length>=3);
+    if(hi<0)return;
+    const h=a[hi].map((c,i)=>String(c).trim()||'col'+i);
+    out.push(...parseRows(a.slice(hi+1).map(r=>{const o={};h.forEach((k,i)=>{o[k]=r[i]});return o})));
+  });
+  const seen=new Set();
+  return out.filter(o=>{if(!o.num)return true;if(seen.has(o.num))return false;seen.add(o.num);return true});
 }
 function sample(){
   const t=new Date(),d=n=>{const x=new Date(t.getFullYear(),t.getMonth(),t.getDate()+n);return iso(x)};
@@ -220,9 +234,9 @@ function Deck({deck,answer,close}){
     <button class="later" onClick=${close}>Decidir depois</button>
   </div>`;
 }
-const STAGES=[{n:'Camponês',at:0},{n:'Aprendiz',at:3},{n:'Soldado',at:8},{n:'Cavaleiro',at:15},{n:'Campeão',at:25},{n:'Lenda',at:40}];
+const STAGES=[{n:'Camponês',at:0},{n:'Aprendiz',at:3},{n:'Soldado',at:8},{n:'Cavaleiro',at:15},{n:'Campeão',at:25},{n:'Lenda',at:40},{n:'Imortal',at:60}];
 const stageOf=n=>STAGES.reduce((s,x,i)=>n>=x.at?i:s,0);
-const EQ=[['Armadura',0,['Túnica de linho','Couro curtido','Couro reforçado','Cota de malha','Placas de aço','Armadura dourada']],['Arma',1,['','Adaga','Espada de ferro','Espada de ferro','Espada de aço','Espada lendária']],['Braçadeiras',2,'Braçadeiras de couro'],['Ombreiras',4,'Ombreiras de aço'],['Capa',4,'Capa carmesim'],['Aura',5,'Aura lendária']];
+const EQ=[['Armadura',0,['Túnica de linho','Couro curtido','Couro reforçado','Cota de malha','Placas de aço','Armadura dourada','Armadura de mithril']],['Arma',1,['','Adaga','Espada de ferro','Espada de ferro','Espada de aço','Espada lendária','Espada das Eras']],['Braçadeiras',2,'Braçadeiras de couro'],['Ombreiras',4,'Ombreiras de aço'],['Capa',4,'Capa carmesim'],['Aura',5,'Aura lendária'],['Diadema',6,'Diadema de ouro']];
 const SK='#b8805a',HR='#2a1d14';
 function Head(){return html`<g>
   <rect x="88" y="98" width="24" height="20" fill=${SK}/>
@@ -238,8 +252,8 @@ function Head(){return html`<g>
   <rect x="75" y="61" width="23" height="15" rx="3" fill="#ffffff14" stroke="#101010" strokeWidth="2.6"/><rect x="102" y="61" width="23" height="15" rx="3" fill="#ffffff14" stroke="#101010" strokeWidth="2.6"/><path d="M98 66L102 66" stroke="#101010" strokeWidth="2.4"/>
 </g>`}
 function Hero({st}){
-  const sc=.78+st*.08,met=['','','#8d9299','#9aa3ad','#b9c3cf','#dcb54a'][st],tor=['#cdbd9a','#8a5a33','#7a4d2b','#8d9299','#b9c3cf','#dcb54a'][st],tr=st>=5?'#8a5a12':'#4a3320';
-  return html`<svg viewBox="0 0 200 300" class="hero">
+  const sc=.74+st*.07,met=['','','#8d9299','#9aa3ad','#b9c3cf','#dcb54a','#e8c75a'][st],tor=['#cdbd9a','#8a5a33','#7a4d2b','#8d9299','#b9c3cf','#dcb54a','#e8c75a'][st],tr=st>=5?'#8a5a12':'#4a3320';
+  return html`<svg viewBox="0 -30 200 330" class="hero">
    <defs><radialGradient id="au"><stop offset="0" stopColor="#ecd592" stopOpacity=".6"/><stop offset="1" stopColor="#ecd592" stopOpacity="0"/></radialGradient></defs>
    ${st>=5&&html`<circle cx="100" cy="170" r="135" fill="url(#au)"/>`}
    <ellipse cx="100" cy="290" rx=${50*sc+10} ry="8" fill="#0008"/>
@@ -255,13 +269,38 @@ function Hero({st}){
     ${st>=2&&html`<rect x="38" y="164" width="30" height="26" rx="8" fill=${st>=4?met:'#5a3a20'}/><rect x="132" y="164" width="30" height="26" rx="8" fill=${st>=4?met:'#5a3a20'}/>`}
     ${st>=4&&html`<ellipse cx="54" cy="122" rx="22" ry="15" fill=${met}/><ellipse cx="146" cy="122" rx="22" ry="15" fill=${met}/>`}
     <${Head}/>
+    ${st>=6&&html`<path d="M70 52Q100 40 130 52" stroke="#e8c75a" strokeWidth="4" fill="none"/><circle cx="100" cy="45" r="4.5" fill="#7fd1ff"/>`}
     ${st>=1&&html`<g>${st>=5&&html`<rect x="140" y="52" width="16" height="152" rx="6" fill="#ffe9a8" opacity=".35"/>`}
       <rect x="144" y=${st===1?150:70} width="8" height=${st===1?46:128} fill=${st>=5?'#fff3c4':'#d5dbe2'} stroke="#7b8590"/>
       ${st>=2&&html`<path d="M144 70L148 56L152 70Z" fill=${st>=5?'#fff3c4':'#d5dbe2'} stroke="#7b8590"/>`}
       <rect x="134" y="196" width="28" height="7" rx="3" fill="#dcb54a"/><rect x="144" y="203" width="8" height="18" rx="3" fill="#4a3320"/><circle cx="148" cy="208" r="9" fill=${SK}/></g>`}
    </g></svg>`;
 }
-let AC;
+let AC,AMBO=null;
+function synth(vol){
+  AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+  const g=AC.createGain();g.gain.value=vol*.5;g.connect(AC.destination);
+  const buf=AC.createBuffer(1,AC.sampleRate*4,AC.sampleRate),d=buf.getChannelData(0);let l=0;
+  for(let i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*10}
+  const src=AC.createBufferSource(),bp=AC.createBiquadFilter();src.buffer=buf;src.loop=true;bp.type='bandpass';bp.frequency.value=450;bp.Q.value=.5;
+  src.connect(bp);bp.connect(g);src.start();
+  let on=true;
+  const chirp=()=>{if(!on)return;const t=AC.currentTime,n=2+Math.floor(Math.random()*3),f=2200+Math.random()*1800;
+    for(let i=0;i<n;i++){const o=AC.createOscillator(),e=AC.createGain(),s=t+i*.13;
+      o.frequency.setValueAtTime(f,s);o.frequency.exponentialRampToValueAtTime(f*1.35,s+.08);
+      e.gain.setValueAtTime(0,s);e.gain.linearRampToValueAtTime(.16,s+.01);e.gain.exponentialRampToValueAtTime(.001,s+.1);
+      o.connect(e);e.connect(g);o.start(s);o.stop(s+.12)}
+    setTimeout(chirp,2500+Math.random()*6000)};
+  chirp();
+  return{vol:v=>{g.gain.value=v*.5},stop:()=>{on=false;try{src.stop()}catch(e){}g.disconnect()}};
+}
+function ambSet(on,vol){
+  if(!on){if(AMBO){AMBO.stop();AMBO=null}return}
+  if(AMBO){AMBO.vol(vol);return}
+  const a=new Audio('audio/taverna.mp3');a.loop=true;a.volume=vol;
+  const me={vol:v=>{a.volume=v},stop:()=>a.pause()};AMBO=me;
+  a.play().catch(e=>{if(AMBO!==me)return;AMBO=(e&&e.name==='NotAllowedError')?null:synth(vol)});
+}
 function sfx(k){
   try{
     AC=AC||new(window.AudioContext||window.webkitAudioContext)();
@@ -278,7 +317,7 @@ function Fx({fx,close}){
   return html`<div class="fx" onClick=${close}><div class="rays"></div>${s===fx.stage&&html`<div class="flash"></div>`}
     <div class="fxc"><div class="ft">${fx.title}</div><div class="fh"><${Hero} st=${s} key=${s}/></div><p>${fx.sub}</p><small>Toque para continuar</small></div></div>`;
 }
-function Hud({lv,pct,xp,stage,snd,onSnd}){return html`<header class="hud"><div class="pt"><svg viewBox="58 22 84 94"><${Head}/></svg></div><div class="hi"><div class="hn"><b>Frannklin</b><span>${STAGES[stage].n} · Nv ${lv}</span></div><div class="xb"><i style=${{width:pct+'%'}}></i></div><small>${xp} XP</small></div><button class="snd" onClick=${onSnd}>${snd?'♫':'✕'}</button></header>`}
+function Hud({lv,pct,xp,stage,snd,onSnd,amb,onAmb}){return html`<header class="hud"><div class="pt"><svg viewBox="58 22 84 94"><${Head}/></svg></div><div class="hi"><div class="hn"><b>Frannklin</b><span>${STAGES[stage].n} · Nv ${lv}</span></div><div class="xb"><i style=${{width:pct+'%'}}></i></div><small>${xp} XP</small></div><button class=${'snd'+(amb?'':' off')} onClick=${onAmb}>♪</button><button class=${'snd'+(snd?'':' off')} onClick=${onSnd}>FX</button></header>`}
 function App(){
   const[deckOpen,setDeckOpen]=useState(true);const[wk,setWk]=useState(0);const[tab,setTab]=useState('home');const[reward,setReward]=useState(null);const[fx,setFx]=useState(null);
   const[st,setSt]=useState(load);const[msg,setMsg]=useState('');
@@ -288,9 +327,9 @@ function App(){
     const f=e.target.files[0];if(!f)return;
     try{
       const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
-      const orders=parseRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{raw:true,defval:''}));
+      const orders=readBook(wb);
       if(!orders.length){setMsg('Nenhuma ordem encontrada. Confira os nomes das colunas.')}
-      else{save({orders,done:st.done});setMsg(orders.length+' desafios revelados')}
+      else{const old=new Set(st.orders.map(o=>o.num)),nw=orders.filter(o=>!old.has(o.num)&&!st.done[o.num]).length,dn=orders.filter(o=>st.done[o.num]).length;save({...st,orders});setMsg(nw+' novos desafios · '+(orders.length-nw-dn)+' já existentes'+(dn?' · '+dn+' já concluídos':''))}
     }catch(err){setMsg('Não foi possível ler a planilha.')}
     e.target.value='';
   };
@@ -339,13 +378,21 @@ function App(){
     return()=>{clearInterval(id);document.removeEventListener('visibilitychange',vis)};
   });
   const play=k=>{if(st.snd!==false)sfx(k)};
+  const vol=st.vol==null?.35:st.vol;
+  useEffect(()=>{
+    const on=st.amb!==false,h=()=>ambSet(true,vol);
+    if(!on){ambSet(false);return}
+    if(AMBO)AMBO.vol(vol);
+    window.addEventListener('pointerup',h);return()=>window.removeEventListener('pointerup',h);
+  },[st.amb,st.vol]);
   const cnt=doneList.length,stage=stageOf(cnt),lv=Math.floor(xpTotal/50)+1,pct=(xpTotal%50)*2;
   const per={};doneList.forEach(x=>{per[x.d]=(per[x.d]||0)+1});
   let streak=0,run=0,pv=null;Object.keys(per).sort().forEach(d=>{run=pv&&Math.round((fromIso(d)-fromIso(pv))/864e5)===1?run+1:1;pv=d;streak=Math.max(streak,run)});
   const lateN=doneList.filter(x=>x.late>0).length,prevN=doneList.filter(x=>/prev/i.test(x.tipo||'')).length,best=Math.max(0,...Object.values(per));
-  const prog=[['first','Primeiro Sangue','Conclua 1 OS',cnt,1],['five','Aprendiz da Forja','Conclua 5 OS',cnt,5],['ten','Veterano de Guerra','Conclua 10 OS',cnt,10],['t25','Campeão da Guilda','Conclua 25 OS',cnt,25],['t50','Lenda da Terra Média','Conclua 50 OS',cnt,50],['l3','Caçador de Sombras','Conclua 3 OS atrasadas',lateN,3],['l10','Quebra-Correntes','Conclua 10 OS atrasadas',lateN,10],['c3','Combo Triplo','3 OS no mesmo dia',best,3],['c5','Fúria do Guerreiro','5 OS no mesmo dia',best,5],['pv','Mestre da Forja','Conclua 5 OS preventivas',prevN,5],['sk','Chama Constante','3 dias seguidos com OS concluídas',streak,3],['xp','Tesouro de Erebor','Alcance 200 XP',xpTotal,200]].map(a=>({id:a[0],t:a[1],d:a[2],v:Math.min(a[3],a[4]),max:a[4]}));
+  const hr=x=>{const d=new Date(x.at);return d.getHours()+d.getMinutes()/60},earlyN=doneList.filter(x=>hr(x)<9).length,lunchN=doneList.filter(x=>hr(x)>=11&&hr(x)<12.5).length;
+  const prog=[['first','Primeiro Sangue','Conclua 1 OS',cnt,1],['five','Aprendiz da Forja','Conclua 5 OS',cnt,5],['ten','Veterano de Guerra','Conclua 10 OS',cnt,10],['t25','Campeão da Guilda','Conclua 25 OS',cnt,25],['t50','Lenda da Terra Média','Conclua 50 OS',cnt,50],['l3','Caçador de Sombras','Conclua 3 OS atrasadas',lateN,3],['l10','Quebra-Correntes','Conclua 10 OS atrasadas',lateN,10],['c3','Combo Triplo','3 OS no mesmo dia',best,3],['c5','Fúria do Guerreiro','5 OS no mesmo dia',best,5],['pv','Mestre da Forja','Conclua 5 OS preventivas',prevN,5],['sk','Chama Constante','3 dias seguidos com OS concluídas',streak,3],['xp','Tesouro de Erebor','Alcance 200 XP',xpTotal,200],['early','Madrugador','Conclua 1 OS antes das 9h',earlyN,1],['lunch','Banquete do Guerreiro','3 OS durante o almoço',lunchN,3],['clean','Sem Sombras','Nenhuma OS atrasada em aberto',lateList.length===0&&cnt>0?1:0,1],['t60','Imortal','Conclua 60 OS',cnt,60],['xp5','Rei sob a Montanha','Alcance 500 XP',xpTotal,500],['pv20','Mestre Supremo da Forja','Conclua 20 OS preventivas',prevN,20]].map(a=>({id:a[0],t:a[1],d:a[2],v:Math.min(a[3],a[4]),max:a[4]}));
   useEffect(()=>{const got=prog.filter(a=>a.v>=a.max&&!(st.ach||{})[a.id]);if(!got.length)return;const ach={...st.ach};got.forEach(a=>{ach[a.id]=todayIso});save({...st,ach});setTimeout(()=>{play('ach');setReward({xp:0,k:Date.now(),msg:'Conquista: '+got[0].t});setTimeout(()=>setReward(null),2600)},reward?2700:0)});
-  const nav=html`<${React.Fragment}><${Hud} lv=${lv} pct=${pct} xp=${xpTotal} stage=${stage} snd=${st.snd!==false} onSnd=${()=>save({...st,snd:st.snd===false})}/><nav class="tabs"><button class=${tab==='home'?'on':''} onClick=${()=>setTab('home')}>Jornada</button><button class=${tab==='week'?'on':''} onClick=${()=>setTab('week')}>Semana</button><button class=${tab==='hero'?'on':''} onClick=${()=>setTab('hero')}>Herói</button><button class=${tab==='ach'?'on':''} onClick=${()=>setTab('ach')}>Troféus</button><button class=${tab==='done'?'on':''} onClick=${()=>setTab('done')}>Feitos · ${doneList.length}</button></nav>${fx&&html`<${Fx} fx=${fx} key=${fx.k} close=${()=>setFx(null)}/>`}</${React.Fragment}>`;
+  const nav=html`<${React.Fragment}><${Hud} lv=${lv} pct=${pct} xp=${xpTotal} stage=${stage} snd=${st.snd!==false} onSnd=${()=>save({...st,snd:st.snd===false})} amb=${st.amb!==false} onAmb=${()=>{const on=st.amb===false;save({...st,amb:on});ambSet(on,vol)}}/><nav class="tabs"><button class=${tab==='home'?'on':''} onClick=${()=>setTab('home')}>Jornada</button><button class=${tab==='week'?'on':''} onClick=${()=>setTab('week')}>Semana</button><button class=${tab==='hero'?'on':''} onClick=${()=>setTab('hero')}>Herói</button><button class=${tab==='ach'?'on':''} onClick=${()=>setTab('ach')}>Troféus</button><button class=${tab==='done'?'on':''} onClick=${()=>setTab('done')}>Feitos · ${doneList.length}</button></nav>${fx&&html`<${Fx} fx=${fx} key=${fx.k} close=${()=>setFx(null)}/>`}</${React.Fragment}>`;
   const rew=reward&&html`<div class="rew" key=${reward.k}><span class="rn">ᚠ</span><div><b>${reward.msg||'Desafio cumprido!'}</b>${reward.xp>0&&html`<div>+${reward.xp} XP</div>`}</div></div>`;
   if(tab==='hero'){
     const nx=STAGES[stage+1];
@@ -399,16 +446,17 @@ function App(){
     </div>
     <div class="actions">
       <label class="btn">Importar planilha<input type="file" accept=".xlsx,.xls,.csv" hidden onChange=${onFile}/></label>
-      ${total>0&&html`<button class="btn ghost" onClick=${()=>{save({orders:[],done:{}});setMsg('')}}>Limpar</button>`}
+      ${total>0&&html`<button class="btn ghost" onClick=${()=>{save({...st,orders:[]});setMsg('')}}>Limpar</button>`}
     </div>
     ${msg&&html`<div class="msg">${msg}</div>`}
     <div class="plan" style=${{marginTop:'14px'}}><b>Lembrete diário</b>
       ${NT.on?html`<div class="prow"><span>Todo dia às <input type="time" value=${NT.time} onChange=${e=>save({...st,nt:{...NT,time:e.target.value||'07:00',last:''}})}/></span><button class="btn ghost done" onClick=${()=>save({...st,nt:{...NT,on:false}})}>Desligar</button></div>`:html`<button class="btn done" style=${{margin:0}} onClick=${enableNt}>Ativar lembrete</button>`}
       <i class="hint">Avisa ao abrir o app e enquanto ele estiver ativo. Instale na tela inicial para melhor resultado.</i></div>
+    <div class="plan"><b>Som ambiente · volume</b><input type="range" min="0" max="1" step="0.05" value=${vol} onChange=${e=>save({...st,vol:+e.target.value})}/><i class="hint">Começa ao primeiro toque. O botão ♪ no topo liga e desliga.</i></div>
     ${deck.length>0&&!deckOpen&&html`<div class="actions" style=${{marginTop:'12px'}}><button class="btn" onClick=${()=>setDeckOpen(true)}>Desafios de hoje (${deck.length})</button></div>`}
     ${planned.length>0&&html`<h2>Plano de hoje</h2>${['dia','cafe','almoco'].map(w=>{const it=planned.filter(o=>ans[o.num]===w);return it.length?html`<div class="plan" key=${w}><b>${WIN[w].t} · ${WIN[w].h}</b>${it.map(o=>html`<div class="prow" key=${o.num+o.titulo}><span>${o.titulo} <i>OS ${o.num}</i></span><button class="btn done" onClick=${()=>finish(o)}>Concluir</button></div>`)}</div>`:null})}`}
     ${total===0&&html`<div class="empty">Nenhum desafio no horizonte.<br/>Importe a planilha de ordens para começar a jornada.<br/><br/>
-      <button class="btn ghost" onClick=${()=>save({orders:sample(),done:st.done})}>Ver exemplo</button></div>`}
+      <button class="btn ghost" onClick=${()=>save({...st,orders:sample()})}>Ver exemplo</button></div>`}
     ${lateList.length>0&&html`<h2 class="red">Atrasadas</h2>${lateList.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o} onDone=${finish}/>`)}`}
     ${groups.map(g=>html`<div key=${g.k}><h2>${weekLabel(g.k,today)}</h2>${g.items.map(o=>html`<${Card} key=${o.num+o.titulo} o=${o} onDone=${finish}/>`)}</div>`)}
   </div>`;
