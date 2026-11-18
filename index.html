@@ -93,6 +93,30 @@ h2.red{color:#e0745a}h2.red::after{background:linear-gradient(90deg,#e0745a,tran
 .chip{font-size:10px;color:#c2e0b0;border:1px solid #6f9a5f;border-radius:10px;padding:1px 6px}
 .plan input[type=time]{background:#14110c;color:var(--gold2);border:1px solid #c9a24b66;border-radius:6px;padding:3px 6px;font-size:14px}
 .plan .hint{display:block;margin-top:6px}
+body{background:radial-gradient(ellipse at top,#3a2c1a,#120e09 70%) fixed,repeating-linear-gradient(45deg,#ffffff05 0 2px,transparent 2px 7px)}
+.wrap{padding-top:84px}
+.hud{position:fixed;top:0;left:0;right:0;z-index:45;display:flex;gap:12px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 14px 8px;background:linear-gradient(#0e0b07f2,#14110cee);border-bottom:1px solid var(--gold);box-shadow:0 4px 18px #000a}
+.pt{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(#6a8a5e,#1f2c1c);overflow:hidden;flex:none;box-shadow:0 0 14px #c9a24b66}
+.pt svg{width:100%;height:100%}
+.hi{flex:1;min-width:0}
+.hn{display:flex;justify-content:space-between;align-items:baseline;font-family:Cinzel,serif}
+.hn b{color:var(--gold2);font-size:16px;letter-spacing:1px}.hn span{color:var(--mute);font-size:11px}
+.xb{height:9px;border-radius:6px;background:#0c0905;border:1px solid #c9a24b88;overflow:hidden;margin-top:5px}
+.xb i{display:block;height:100%;background:linear-gradient(90deg,#8a6a24,#ecd592);box-shadow:0 0 8px #ecd592;transition:width .6s}
+.hi small{color:var(--mute);font-size:11px}
+.tabs button{font-size:11px;letter-spacing:0;padding:15px 0}
+.stage{height:360px;display:flex;justify-content:center;align-items:flex-end;background:radial-gradient(ellipse at 50% 90%,#5a4424,transparent 70%),linear-gradient(#1b2a1c,#14110c);border:1px solid var(--gold);border-radius:16px;margin:12px 0;overflow:hidden;box-shadow:inset 0 0 40px #000a}
+.hero{height:100%;filter:drop-shadow(0 8px 10px #000a)}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.slot{border:1px solid #c9a24b66;border-radius:10px;padding:8px 10px;background:#1b150e;font-size:13px}
+.slot b{display:block;font-family:Cinzel,serif;font-size:10px;letter-spacing:1px;color:var(--gold)}
+.slot.lk{opacity:.4}
+.tr{display:flex;gap:12px;align-items:center;border:1px solid #c9a24b44;border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#1b150e;opacity:.72}
+.tr.ok{opacity:1;border-color:var(--gold);box-shadow:0 0 14px #c9a24b33}
+.ti{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:2px solid #c9a24b66;font-size:20px;color:var(--mute);flex:none}
+.tr.ok .ti{background:radial-gradient(circle at 35% 30%,#ecd592,#8a6a24);color:#14110c;border-color:#14110c}
+.tr div{flex:1}.tr b{font-family:Cinzel,serif;font-size:13px;color:var(--gold2)}
+.tr small{display:block;color:var(--mute);font-size:13px}
 </style>
 </head>
 <body>
@@ -183,6 +207,48 @@ function Deck({deck,answer,close}){
     <button class="later" onClick=${close}>Decidir depois</button>
   </div>`;
 }
+const STAGES=[{n:'Camponês',at:0},{n:'Aprendiz',at:3},{n:'Soldado',at:8},{n:'Cavaleiro',at:15},{n:'Campeão',at:25},{n:'Lenda',at:40}];
+const stageOf=n=>STAGES.reduce((s,x,i)=>n>=x.at?i:s,0);
+const EQ=[['Armadura',0,['Túnica de linho','Couro curtido','Couro reforçado','Cota de malha','Placas de aço','Armadura dourada']],['Arma',1,['','Adaga','Espada de ferro','Espada de ferro','Espada de aço','Espada lendária']],['Braçadeiras',2,'Braçadeiras de couro'],['Ombreiras',4,'Ombreiras de aço'],['Capa',4,'Capa carmesim'],['Aura',5,'Aura lendária']];
+const SK='#b8805a',HR='#2a1d14';
+function Head(){return html`<g>
+  <rect x="88" y="98" width="24" height="20" fill=${SK}/>
+  <ellipse cx="70" cy="72" rx="5" ry="8" fill=${SK}/><ellipse cx="130" cy="72" rx="5" ry="8" fill=${SK}/>
+  <ellipse cx="100" cy="70" rx="30" ry="35" fill=${SK}/>
+  <path d="M68 64Q66 30 100 29Q134 30 132 64Q124 44 100 46Q76 44 68 64Z" fill=${HR}/>
+  <circle cx="78" cy="40" r="7" fill=${HR}/><circle cx="92" cy="33" r="8" fill=${HR}/><circle cx="108" cy="33" r="8" fill=${HR}/><circle cx="122" cy="40" r="7" fill=${HR}/>
+  <path d="M70 68Q68 112 100 114Q132 112 130 68Q126 92 100 92Q74 92 70 68Z" fill="#1c140e"/>
+  <path d="M82 86Q100 77 118 86Q100 92 82 86Z" fill="#1c140e"/>
+  <path d="M92 99Q100 104 108 99" stroke="#4a2c1c" strokeWidth="2" fill="none"/>
+  <circle cx="86" cy="69" r="2.4" fill="#1a1210"/><circle cx="114" cy="69" r="2.4" fill="#1a1210"/>
+  <path d="M77 60L95 59M105 59L123 60" stroke=${HR} strokeWidth="3"/>
+  <rect x="75" y="61" width="23" height="15" rx="3" fill="#ffffff14" stroke="#101010" strokeWidth="2.6"/><rect x="102" y="61" width="23" height="15" rx="3" fill="#ffffff14" stroke="#101010" strokeWidth="2.6"/><path d="M98 66L102 66" stroke="#101010" strokeWidth="2.4"/>
+</g>`}
+function Hero({st}){
+  const sc=.78+st*.08,met=['','','#8d9299','#9aa3ad','#b9c3cf','#dcb54a'][st],tor=['#cdbd9a','#8a5a33','#7a4d2b','#8d9299','#b9c3cf','#dcb54a'][st],tr=st>=5?'#8a5a12':'#4a3320';
+  return html`<svg viewBox="0 0 200 300" class="hero">
+   <defs><radialGradient id="au"><stop offset="0" stopColor="#ecd592" stopOpacity=".6"/><stop offset="1" stopColor="#ecd592" stopOpacity="0"/></radialGradient></defs>
+   ${st>=5&&html`<circle cx="100" cy="170" r="135" fill="url(#au)"/>`}
+   <ellipse cx="100" cy="290" rx=${50*sc+10} ry="8" fill="#0008"/>
+   <g transform=${'translate(100 290) scale('+sc+') translate(-100 -290)'}>
+    ${st>=4&&html`<path d="M60 118Q36 210 52 282L148 282Q164 210 140 118Z" fill="#7a1f1a"/>`}
+    <rect x="72" y="196" width="24" height="82" rx="6" fill="#2b2a2e"/><rect x="104" y="196" width="24" height="82" rx="6" fill="#2b2a2e"/>
+    <rect x="66" y="268" width="34" height="22" rx="7" fill="#3a2a1c"/><rect x="100" y="268" width="34" height="22" rx="7" fill="#3a2a1c"/>
+    <rect x="40" y="120" width="26" height="80" rx="12" fill=${SK}/><rect x="134" y="120" width="26" height="80" rx="12" fill=${SK}/>
+    <path d="M62 116Q100 104 138 116L142 206L58 206Z" fill=${tor}/>
+    ${st===3&&html`<path d="M66 130h68M66 144h68M66 158h68M66 172h68M66 186h68" stroke="#5d646c" strokeWidth="2" strokeDasharray="3 3"/>`}
+    ${st>=4&&html`<path d="M100 112V204" stroke=${tr} strokeWidth="3"/>`}
+    <rect x="58" y="198" width="84" height="11" fill=${tr}/><rect x="94" y="197" width="12" height="13" rx="2" fill="#dcb54a"/>
+    ${st>=2&&html`<rect x="38" y="164" width="30" height="26" rx="8" fill=${st>=4?met:'#5a3a20'}/><rect x="132" y="164" width="30" height="26" rx="8" fill=${st>=4?met:'#5a3a20'}/>`}
+    ${st>=4&&html`<ellipse cx="54" cy="122" rx="22" ry="15" fill=${met}/><ellipse cx="146" cy="122" rx="22" ry="15" fill=${met}/>`}
+    <${Head}/>
+    ${st>=1&&html`<g>${st>=5&&html`<rect x="140" y="52" width="16" height="152" rx="6" fill="#ffe9a8" opacity=".35"/>`}
+      <rect x="144" y=${st===1?150:70} width="8" height=${st===1?46:128} fill=${st>=5?'#fff3c4':'#d5dbe2'} stroke="#7b8590"/>
+      ${st>=2&&html`<path d="M144 70L148 56L152 70Z" fill=${st>=5?'#fff3c4':'#d5dbe2'} stroke="#7b8590"/>`}
+      <rect x="134" y="196" width="28" height="7" rx="3" fill="#dcb54a"/><rect x="144" y="203" width="8" height="18" rx="3" fill="#4a3320"/><circle cx="148" cy="208" r="9" fill=${SK}/></g>`}
+   </g></svg>`;
+}
+function Hud({lv,pct,xp,stage}){return html`<header class="hud"><div class="pt"><svg viewBox="58 22 84 94"><${Head}/></svg></div><div class="hi"><div class="hn"><b>Frannklin</b><span>${STAGES[stage].n} · Nv ${lv}</span></div><div class="xb"><i style=${{width:pct+'%'}}></i></div><small>${xp} XP</small></div></header>`}
 function App(){
   const[deckOpen,setDeckOpen]=useState(true);const[wk,setWk]=useState(0);const[tab,setTab]=useState('home');const[reward,setReward]=useState(null);
   const[st,setSt]=useState(load);const[msg,setMsg]=useState('');
@@ -214,7 +280,7 @@ function App(){
   const deck=list.filter(o=>(o.late>0||(o.inicio&&o.inicio<=todayIso))&&!ans[o.num]).sort((a,b)=>b.late-a.late);
   const planned=list.filter(o=>['dia','cafe','almoco'].includes(ans[o.num]));
   const answer=(num,w)=>save({...st,plan:{d:todayIso,a:{...ans,[num]:w}}});
-  const finish=o=>{const xp=10+(o.late>0?5:0);save({...st,done:{...st.done,[o.num]:{num:o.num,titulo:o.titulo,tipo:o.tipo,trabalho:o.trabalho,late:o.late,xp,d:todayIso,at:new Date().toISOString()}}});setReward({xp,k:Date.now()});setTimeout(()=>setReward(null),2600)};
+  const finish=o=>{const xp=10+(o.late>0?5:0);save({...st,done:{...st.done,[o.num]:{num:o.num,titulo:o.titulo,tipo:o.tipo,trabalho:o.trabalho,late:o.late,xp,d:todayIso,at:new Date().toISOString()}}});{const nx=xpTotal+xp;let msg='Desafio cumprido!';if(Math.floor(nx/50)>Math.floor(xpTotal/50))msg='Nível '+(Math.floor(nx/50)+1)+'!';else if(stageOf(doneList.length+1)>stageOf(doneList.length))msg='Novo equipamento!';setReward({xp,k:Date.now(),msg});setTimeout(()=>setReward(null),2600)}};
   const undo=n=>{const d={...st.done};delete d[n];save({...st,done:d})};
   const doneList=Object.values(st.done).sort((a,b)=>b.at.localeCompare(a.at));
   const xpTotal=doneList.reduce((s,x)=>s+(x.xp||0),0);
@@ -242,8 +308,27 @@ function App(){
     const vis=()=>{if(!document.hidden)tick()};document.addEventListener('visibilitychange',vis);
     return()=>{clearInterval(id);document.removeEventListener('visibilitychange',vis)};
   });
-  const nav=html`<nav class="tabs"><button class=${tab==='home'?'on':''} onClick=${()=>setTab('home')}>Jornada</button><button class=${tab==='week'?'on':''} onClick=${()=>setTab('week')}>Semana</button><button class=${tab==='done'?'on':''} onClick=${()=>setTab('done')}>Feitos · ${doneList.length}</button></nav>`;
-  const rew=reward&&html`<div class="rew" key=${reward.k}><span class="rn">ᚠ</span><div><b>Desafio cumprido!</b><div>+${reward.xp} XP</div></div></div>`;
+  const cnt=doneList.length,stage=stageOf(cnt),lv=Math.floor(xpTotal/50)+1,pct=(xpTotal%50)*2;
+  const per={};doneList.forEach(x=>{per[x.d]=(per[x.d]||0)+1});
+  let streak=0,run=0,pv=null;Object.keys(per).sort().forEach(d=>{run=pv&&Math.round((fromIso(d)-fromIso(pv))/864e5)===1?run+1:1;pv=d;streak=Math.max(streak,run)});
+  const lateN=doneList.filter(x=>x.late>0).length,prevN=doneList.filter(x=>/prev/i.test(x.tipo||'')).length,best=Math.max(0,...Object.values(per));
+  const prog=[['first','Primeiro Sangue','Conclua 1 OS',cnt,1],['five','Aprendiz da Forja','Conclua 5 OS',cnt,5],['ten','Veterano de Guerra','Conclua 10 OS',cnt,10],['t25','Campeão da Guilda','Conclua 25 OS',cnt,25],['t50','Lenda da Terra Média','Conclua 50 OS',cnt,50],['l3','Caçador de Sombras','Conclua 3 OS atrasadas',lateN,3],['l10','Quebra-Correntes','Conclua 10 OS atrasadas',lateN,10],['c3','Combo Triplo','3 OS no mesmo dia',best,3],['c5','Fúria do Guerreiro','5 OS no mesmo dia',best,5],['pv','Mestre da Forja','Conclua 5 OS preventivas',prevN,5],['sk','Chama Constante','3 dias seguidos com OS concluídas',streak,3],['xp','Tesouro de Erebor','Alcance 200 XP',xpTotal,200]].map(a=>({id:a[0],t:a[1],d:a[2],v:Math.min(a[3],a[4]),max:a[4]}));
+  useEffect(()=>{const got=prog.filter(a=>a.v>=a.max&&!(st.ach||{})[a.id]);if(!got.length)return;const ach={...st.ach};got.forEach(a=>{ach[a.id]=todayIso});save({...st,ach});setTimeout(()=>{setReward({xp:0,k:Date.now(),msg:'Conquista: '+got[0].t});setTimeout(()=>setReward(null),2600)},reward?2700:0)});
+  const nav=html`<${React.Fragment}><${Hud} lv=${lv} pct=${pct} xp=${xpTotal} stage=${stage}/><nav class="tabs"><button class=${tab==='home'?'on':''} onClick=${()=>setTab('home')}>Jornada</button><button class=${tab==='week'?'on':''} onClick=${()=>setTab('week')}>Semana</button><button class=${tab==='hero'?'on':''} onClick=${()=>setTab('hero')}>Herói</button><button class=${tab==='ach'?'on':''} onClick=${()=>setTab('ach')}>Troféus</button><button class=${tab==='done'?'on':''} onClick=${()=>setTab('done')}>Feitos · ${doneList.length}</button></nav></${React.Fragment}>`;
+  const rew=reward&&html`<div class="rew" key=${reward.k}><span class="rn">ᚠ</span><div><b>${reward.msg||'Desafio cumprido!'}</b>${reward.xp>0&&html`<div>+${reward.xp} XP</div>`}</div></div>`;
+  if(tab==='hero'){
+    const nx=STAGES[stage+1];
+    return html`<div class="wrap">${nav}${rew}
+      <h1>Frannklin</h1><p class="sub">${STAGES[stage].n} · Nível ${lv}</p>
+      <div class="stage"><${Hero} st=${stage}/></div>
+      <div class="plan"><b>Próxima evolução</b>${nx?nx.n+' aos '+nx.at+' OS · faltam '+(nx.at-cnt):'Poder máximo alcançado'}<div class="xb"><i style=${{width:(nx?Math.min(100,(cnt-STAGES[stage].at)/(nx.at-STAGES[stage].at)*100):100)+'%'}}></i></div></div>
+      <div class="slots">${EQ.map(e=>html`<div class=${'slot'+(stage<e[1]?' lk':'')} key=${e[0]}><b>${e[0]}</b>${stage>=e[1]?(Array.isArray(e[2])?e[2][stage]:e[2]):'Bloqueado'}</div>`)}</div>
+    </div>`;
+  }
+  if(tab==='ach')return html`<div class="wrap">${nav}${rew}
+    <h1>Conquistas</h1><p class="sub">${prog.filter(a=>a.v>=a.max).length} de ${prog.length} desbloqueadas</p><div class="orn"></div>
+    ${prog.map(a=>{const ok=a.v>=a.max;return html`<div class=${'tr'+(ok?' ok':'')} key=${a.id}><span class="ti">${ok?'★':'✧'}</span><div><b>${a.t}</b><small>${a.d}</small>${!ok&&html`<div class="xb"><i style=${{width:a.v/a.max*100+'%'}}></i></div>`}</div></div>`})}
+  </div>`;
   if(tab==='week'){
     const ws=monday(today);ws.setDate(ws.getDate()+wk*7);
     const ds=[0,1,2,3,4,5,6].map(i=>{const d=new Date(ws);d.setDate(d.getDate()+i);return d});
